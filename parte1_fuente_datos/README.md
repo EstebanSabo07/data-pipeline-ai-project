@@ -68,7 +68,7 @@ parte1_fuente_datos/
 │   ├── download_dataset.py ← Verificación de archivos del dataset
 │   ├── load_data.py        ← Carga CSV → PostgreSQL (con limpieza)
 │   ├── verify_load.py      ← Verificación post-carga + reporte de auditoría
-│   └── run_parte1.py       ← ⭐ SCRIPT MAESTRO (ejecuta todo el pipeline)
+│   └── run_parte1.py       ← SCRIPT MAESTRO (ejecuta todo el pipeline)
 ├── data/
 │   ├── raw/               ← CSVs de Kaggle (git-ignorados, ~120 MB)
 │   ├── reports/           ← Reportes de verificación auto-generados
@@ -242,3 +242,14 @@ Después de ejecutar el pipeline, la verificación confirma:
 | SQLAlchemy   | 2.0.30  | Engine para integración con pandas  |
 | pandas       | 2.2.2   | Lectura de CSV y transformaciones   |
 | python-dotenv| 1.0.1   | Gestión segura de credenciales      |
+
+
+
+
+
+## Nota sobre el Dataset
+
+El dataset no está incluido en este repositorio debido a su tamaño (~120 MB).
+
+Debe descargarse manualmente desde Kaggle y colocarse en:
+parte1_fuente_datos/data/raw/
