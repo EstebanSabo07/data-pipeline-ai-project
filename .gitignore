@@ -1,0 +1,46 @@
+# ============================================================
+# .gitignore — Pipeline de Datos con IA
+# Grupo 6 — LEAD University
+# ============================================================
+
+# --- Entorno virtual Python ---
+venv/
+.venv/
+env/
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+.Python
+
+# --- Variables de entorno (contiene credenciales — NUNCA subir) ---
+.env
+*.env
+
+# --- Dataset Olist (archivos grandes, descarga manual) ---
+# Los CSV se descargan desde: https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce
+parte1_fuente_datos/data/raw/*.csv
+parte1_fuente_datos/data/raw/*.zip
+*.zip
+
+# --- Archivos generados automáticamente ---
+parte1_fuente_datos/data/logs/*.log
+parte1_fuente_datos/data/reports/*.csv
+
+# --- Jupyter Notebooks checkpoints ---
+.ipynb_checkpoints/
+
+# --- IDE / Editor ---
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# --- Distribución / Build ---
+dist/
+build/
+*.egg-info/
+
+# --- Kaggle credentials ---
+kaggle.json

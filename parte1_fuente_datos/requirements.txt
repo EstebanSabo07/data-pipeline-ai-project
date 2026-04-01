@@ -1,0 +1,26 @@
+# ============================================================
+# requirements.txt — Parte 1: Fuente de Datos Real
+# Proyecto Final — Pipeline de Datos con IA
+# Grupo 6 — LEAD University
+# ============================================================
+#
+# Instalación:
+#   pip install -r requirements.txt
+# ============================================================
+
+# --- Base de datos PostgreSQL ---
+psycopg2-binary==2.9.10         # Driver nativo PostgreSQL para Python (>=2.9.10 para Python 3.13)
+SQLAlchemy==2.0.30              # ORM / engine para integración con pandas
+
+# --- Procesamiento de datos ---
+pandas==2.2.2                   # Lectura de CSV y manipulación de DataFrames
+numpy==1.26.4                   # Operaciones numéricas
+
+# --- Variables de entorno ---
+python-dotenv==1.0.1            # Leer credenciales desde archivo .env
+
+# --- Kaggle API (descarga automática del dataset) ---
+kaggle==1.6.14                  # Cliente oficial de Kaggle
+
+# --- Utilidades ---
+tqdm==4.66.4                    # Barras de progreso (opcional, para carga masiva)
