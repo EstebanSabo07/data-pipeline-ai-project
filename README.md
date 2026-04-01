@@ -59,7 +59,7 @@ PostgreSQL (Olist DB)
 
 ```
 pipeline-datos-ia-grupo6/
-├── parte1_fuente_datos/       # Esteban Gutiérrez
+├── parte1_fuente_datos/       # Esteban Saborío
 │   ├── config/
 │   ├── sql/
 │   ├── scripts/
