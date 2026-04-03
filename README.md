@@ -14,64 +14,47 @@
 
 ---
 
-## Descripción del Proyecto
+# Parte 1: Fuente de Datos - Amazon Books Reviews
 
-Pipeline completo de ingeniería de datos que abarca desde la conexión a una base de datos PostgreSQL real con el dataset **Olist Brazilian E-Commerce**, hasta la entrega de una aplicación funcional con un modelo de Inteligencia Artificial para predecir el puntaje de reseña de órdenes de clientes.
+Este módulo se encarga de la infraestructura inicial y la ingesta de datos crudos (Raw Data) desde archivos CSV hacia una base de datos relacional PostgreSQL.
 
-### Dataset: Olist Brazilian E-Commerce
-- **Fuente:** [Kaggle - Brazilian E-Commerce Public Dataset by Olist](https://www.kaggle.com/datasets/olistbr/brazilian-ecommerce)
-- **Descripción:** 1,550,066 registros reales de e-commerce en Brasil (2016–2018)
-- **Tablas:** 9 tablas relacionales con datos de clientes, órdenes, productos, vendedores, pagos y reseñas
+## Tecnologías
+- **Base de Datos:** PostgreSQL
+- **Lenguaje:** Python 3.12
+- **Librerías:** Pandas (Ingesta), SQLAlchemy (ORM), Psycopg2 (Driver).
 
----
+## Estructura de Datos
+Se configuró un esquema llamado `books` con dos tablas principales:
+1. `books_data`: Catálogo de 212,404 libros (títulos, autores, categorías).
+2. `books_rating`: ~3 millones de reseñas (usuarios, puntajes, textos de reseñas).
 
-## Arquitectura del Pipeline
+## Instrucciones de Ejecución
+1. Asegúrese de tener el archivo `.env` configurado en `config/` con las credenciales de la DB.
+2. Coloque los archivos `books_data.csv` y `Books_rating.csv` en `data/raw/`.
+3. Ejecute el orquestador inicial:
+   ```bash
+   python scripts/run_parte1.py
 
-```
-PostgreSQL (Olist DB)
-        |
-        v
-[PARTE 1] Fuente de Datos Real
-  - 9 tablas relacionales
-  - Scripts de carga automática
-  - Módulo de conexión reutilizable
-        |
-        v
-[PARTE 2] ETL Completo
-  - Extracción desde PostgreSQL
-  - Transformación y limpieza
-  - Carga a capa "curada"
-        |
-        v
-[PARTE 3] Orquestación
-  - Ejecución automatizada por etapas
-  - Logs de ejecución
-        |
-        v
-[PARTE 4] Aplicativo con IA
-  - Modelo de clasificación (review score)
-  - App funcional con predicción
-```
+4. Verifique la carga con el script de validación:
+   ```bash
+         python scripts/verify_load.py
+   # Parte 2: Proceso ETL - Curación de Datos
 
----
+Este módulo implementa el proceso de Extracción, Transformación y Carga (ETL) para preparar los datos de Amazon Books para un modelo de IA.
 
-## Estructura del Repositorio
+## ⚙️ Lógica del Pipeline
+1. **Extracción:** Consulta las tablas `books_data` y `books_rating` desde PostgreSQL.
+2. **Transformación:**
+   - Limpieza de valores nulos en títulos y autores.
+   - Normalización de formatos de fecha.
+   - **Join:** Unión de catálogos y reseñas mediante la columna `title`.
+   - **Filtrado:** Selección de columnas relevantes para entrenamiento de IA.
+3. **Carga:** Persistencia de los datos "curados" en una nueva tabla `books.curated_books_reviews` y un archivo CSV para análisis rápido.
 
-```
-pipeline-datos-ia-grupo6/
-├── parte1_fuente_datos/       # Esteban Saborío
-│   ├── config/
-│   ├── sql/
-│   ├── scripts/
-│   └── README.md
-├── parte2_etl/                # [Integrante]
-├── parte3_orquestacion/       # [Integrante]
-├── parte4_app_ia/             # [Integrante]
-├── .gitignore
-└── README.md                  # Este archivo
-```
-
----
+## 🚀 Ejecución
+Para iniciar el proceso de transformación:
+```bash
+python scripts/run_etl.py
 
 ## Cómo Ejecutar el Proyecto
 
