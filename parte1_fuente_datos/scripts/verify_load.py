@@ -9,6 +9,7 @@ Genera evidencia de la carga exitosa (requerida por el proyecto).
 Proyecto Final — Administración de Datos — LEAD University
 Grupo 6 | Parte 1: Fuente de Datos Real
 Autor: Esteban Gutiérrez Saborío
+Modificado por: Ariana Víquez S.
 """
 
 import logging
@@ -22,15 +23,15 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from scripts.db_connection import get_database_connection
 
-# ============================================================
+# ====
 # LOGGING
-# ============================================================
+# ====
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-logger = logging.getLogger("olist.verify")
+logger = logging.getLogger("books.verify")
 
 # Directorio de reportes
 REPORTS_DIR = Path(__file__).parent.parent / "data" / "reports"
@@ -39,23 +40,9 @@ REPORTS_DIR = Path(__file__).parent.parent / "data" / "reports"
 def verify_table_counts(engine) -> pd.DataFrame:
     """Verifica cantidad de registros en cada tabla."""
     query = """
-    SELECT 'olist.customers'                      AS tabla, COUNT(*) AS registros FROM olist.customers
+    SELECT 'books.books_data'   AS tabla, COUNT(*) AS registros FROM books.books_data
     UNION ALL
-    SELECT 'olist.geolocation',                              COUNT(*) FROM olist.geolocation
-    UNION ALL
-    SELECT 'olist.sellers',                                  COUNT(*) FROM olist.sellers
-    UNION ALL
-    SELECT 'olist.products',                                 COUNT(*) FROM olist.products
-    UNION ALL
-    SELECT 'olist.product_category_name_translation',        COUNT(*) FROM olist.product_category_name_translation
-    UNION ALL
-    SELECT 'olist.orders',                                   COUNT(*) FROM olist.orders
-    UNION ALL
-    SELECT 'olist.order_items',                              COUNT(*) FROM olist.order_items
-    UNION ALL
-    SELECT 'olist.order_payments',                           COUNT(*) FROM olist.order_payments
-    UNION ALL
-    SELECT 'olist.order_reviews',                            COUNT(*) FROM olist.order_reviews
+    SELECT 'books.books_rating', COUNT(*) FROM books.books_rating
     ORDER BY registros DESC
     """
     return pd.read_sql(query, engine)
@@ -68,7 +55,8 @@ def verify_review_distribution(engine) -> pd.DataFrame:
         review_score,
         COUNT(*) AS cantidad,
         ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER (), 2) AS porcentaje
-    FROM olist.order_reviews
+    FROM books.books_rating
+    WHERE review_score IS NOT NULL
     GROUP BY review_score
     ORDER BY review_score
     """
@@ -78,79 +66,50 @@ def verify_review_distribution(engine) -> pd.DataFrame:
 def verify_data_completeness(engine) -> pd.DataFrame:
     """Verifica nulos en columnas clave."""
     query = """
-    SELECT
-        'orders.customer_id nulos'           AS metrica, COUNT(*) AS valor
-        FROM olist.orders WHERE customer_id IS NULL
+    SELECT 'books_rating.review_score nulos'  AS metrica, COUNT(*) AS valor
+        FROM books.books_rating WHERE review_score IS NULL
     UNION ALL
-    SELECT
-        'orders.order_status nulos',          COUNT(*)
-        FROM olist.orders WHERE order_status IS NULL
+    SELECT 'books_rating.user_id nulos',       COUNT(*)
+        FROM books.books_rating WHERE user_id IS NULL
     UNION ALL
-    SELECT
-        'order_reviews.review_score nulos',   COUNT(*)
-        FROM olist.order_reviews WHERE review_score IS NULL
+    SELECT 'books_rating.title nulos',         COUNT(*)
+        FROM books.books_rating WHERE title IS NULL
     UNION ALL
-    SELECT
-        'order_items.price nulos',            COUNT(*)
-        FROM olist.order_items WHERE price IS NULL
+    SELECT 'books_rating.review_time nulos',   COUNT(*)
+        FROM books.books_rating WHERE review_time IS NULL
     UNION ALL
-    SELECT
-        'customers.customer_state nulos',     COUNT(*)
-        FROM olist.customers WHERE customer_state IS NULL
+    SELECT 'books_data.title nulos',           COUNT(*)
+        FROM books.books_data WHERE title IS NULL
+    UNION ALL
+    SELECT 'books_data.authors nulos',         COUNT(*)
+        FROM books.books_data WHERE authors IS NULL
     """
     return pd.read_sql(query, engine)
 
 
-def verify_referential_integrity(engine) -> pd.DataFrame:
-    """Verifica integridad referencial (registros huérfanos)."""
+def verify_score_range(engine) -> pd.DataFrame:
+    """Verifica que review_score esté en el rango válido (1-5)."""
     query = """
     SELECT
-        'orders sin customer'          AS verificacion,
-        COUNT(*) AS registros_huerfanos
-    FROM olist.orders o
-    LEFT JOIN olist.customers c ON o.customer_id = c.customer_id
-    WHERE c.customer_id IS NULL
-
-    UNION ALL
-
-    SELECT
-        'order_items sin order',
-        COUNT(*)
-    FROM olist.order_items oi
-    LEFT JOIN olist.orders o ON oi.order_id = o.order_id
-    WHERE o.order_id IS NULL
-
-    UNION ALL
-
-    SELECT
-        'reviews sin order',
-        COUNT(*)
-    FROM olist.order_reviews r
-    LEFT JOIN olist.orders o ON r.order_id = o.order_id
-    WHERE o.order_id IS NULL
-
-    UNION ALL
-
-    SELECT
-        'payments sin order',
-        COUNT(*)
-    FROM olist.order_payments p
-    LEFT JOIN olist.orders o ON p.order_id = o.order_id
-    WHERE o.order_id IS NULL
+        MIN(review_score)                                   AS score_minimo,
+        MAX(review_score)                                   AS score_maximo,
+        ROUND(AVG(review_score), 2)                         AS score_promedio,
+        COUNT(*) FILTER (WHERE review_score NOT BETWEEN 1 AND 5) AS fuera_de_rango
+    FROM books.books_rating
+    WHERE review_score IS NOT NULL
     """
     return pd.read_sql(query, engine)
 
 
 def verify_date_range(engine) -> pd.DataFrame:
-    """Verifica el rango temporal del dataset."""
+    """Verifica el rango temporal del dataset usando review_time (Unix timestamp)."""
     query = """
     SELECT
-        MIN(order_purchase_timestamp)::DATE                                    AS primera_orden,
-        MAX(order_purchase_timestamp)::DATE                                    AS ultima_orden,
-        COUNT(DISTINCT DATE_TRUNC('month', order_purchase_timestamp))          AS meses_cubiertos,
-        COUNT(*)                                                               AS total_ordenes
-    FROM olist.orders
-    WHERE order_purchase_timestamp IS NOT NULL
+        MIN(TO_TIMESTAMP(review_time))::DATE    AS primera_resena,
+        MAX(TO_TIMESTAMP(review_time))::DATE    AS ultima_resena,
+        COUNT(*)                                AS total_resenas
+    FROM books.books_rating
+    WHERE review_time IS NOT NULL
     """
     return pd.read_sql(query, engine)
 
@@ -163,7 +122,7 @@ def run_verification() -> bool:
         True si todas las verificaciones pasan.
     """
     logger.info("\n" + "=" * 60)
-    logger.info("  VERIFICACIÓN POST-CARGA — OLIST DB")
+    logger.info("  VERIFICACIÓN POST-CARGA — AMAZON BOOKS DB")
     logger.info("=" * 60)
 
     db = get_database_connection()
@@ -172,18 +131,17 @@ def run_verification() -> bool:
     all_passed = True
     REPORTS_DIR.mkdir(parents=True, exist_ok=True)
 
-    # -------------------------------------------------------
+    # ----
     # 1. Conteo de registros
-    # -------------------------------------------------------
+    # ----
     logger.info("\n📊 1. CONTEO DE REGISTROS POR TABLA:")
     df_counts = verify_table_counts(engine)
     print(df_counts.to_string(index=False))
 
-    # Verificar umbrales mínimos esperados del dataset Olist
+    # Verificar umbrales mínimos esperados
     expected_min = {
-        "olist.customers":   90_000,
-        "olist.orders":      90_000,
-        "olist.order_reviews": 90_000,
+        "books.books_rating": 100_000,
+        "books.books_data":   10_000,
     }
 
     for tabla, minimo in expected_min.items():
@@ -191,45 +149,47 @@ def run_verification() -> bool:
         if len(actual) > 0 and actual[0] >= minimo:
             logger.info(f"   ✅ {tabla}: {actual[0]:,} (>= {minimo:,})")
         else:
-            logger.warning(f"   ⚠️  {tabla}: bajo el mínimo esperado ({minimo:,})")
+            val = actual[0] if len(actual) > 0 else 0
+            logger.warning(f"   ⚠️  {tabla}: {val:,} — bajo el mínimo esperado ({minimo:,})")
             all_passed = False
 
-    # -------------------------------------------------------
+    # ----
     # 2. Distribución de review_score
-    # -------------------------------------------------------
+    # ----
     logger.info("\n⭐ 2. DISTRIBUCIÓN DE REVIEW_SCORE (target IA):")
     df_reviews = verify_review_distribution(engine)
     print(df_reviews.to_string(index=False))
 
-    # -------------------------------------------------------
+    # ----
     # 3. Completitud de datos
-    # -------------------------------------------------------
+    # ----
     logger.info("\n🔍 3. VALORES NULOS EN COLUMNAS CLAVE:")
     df_nulls = verify_data_completeness(engine)
     print(df_nulls.to_string(index=False))
 
-    # -------------------------------------------------------
-    # 4. Integridad referencial
-    # -------------------------------------------------------
-    logger.info("\n🔗 4. INTEGRIDAD REFERENCIAL:")
-    df_integrity = verify_referential_integrity(engine)
-    print(df_integrity.to_string(index=False))
+    # ----
+    # 4. Rango válido de scores
+    # ----
+    logger.info("\n🎯 4. RANGO Y PROMEDIO DE REVIEW_SCORE:")
+    df_scores = verify_score_range(engine)
+    print(df_scores.to_string(index=False))
 
-    if df_integrity["registros_huerfanos"].sum() > 0:
-        logger.warning("   ⚠️  Existen registros huérfanos (puede ser normal en Olist)")
+    fuera_rango = df_scores["fuera_de_rango"].values[0] if len(df_scores) > 0 else 0
+    if fuera_rango > 0:
+        logger.warning(f"   ⚠️  {fuera_rango:,} registros con score fuera del rango 1-5")
     else:
-        logger.info("   ✅ Integridad referencial correcta")
+        logger.info("   ✅ Todos los scores están en rango válido (1-5)")
 
-    # -------------------------------------------------------
+    # ----
     # 5. Rango temporal
-    # -------------------------------------------------------
+    # ----
     logger.info("\n📅 5. RANGO TEMPORAL DEL DATASET:")
     df_dates = verify_date_range(engine)
     print(df_dates.to_string(index=False))
 
-    # -------------------------------------------------------
+    # ----
     # Guardar reporte como CSV
-    # -------------------------------------------------------
+    # ----
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     report_path = REPORTS_DIR / f"verificacion_carga_{timestamp}.csv"
 
@@ -237,7 +197,7 @@ def run_verification() -> bool:
         df_counts.assign(seccion="1_conteo_registros"),
         df_reviews.assign(seccion="2_review_distribution"),
         df_nulls.assign(seccion="3_nulos"),
-        df_integrity.assign(seccion="4_integridad"),
+        df_scores.assign(seccion="4_score_range"),
     ]).to_csv(report_path, index=False)
 
     logger.info(f"\n📄 Reporte guardado en: {report_path}")

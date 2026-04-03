@@ -4,8 +4,9 @@
 --
 -- Proyecto Final — Administración de Datos — LEAD University
 -- Grupo 6 | Parte 1: Fuente de Datos Real
--- Dataset: Olist Brazilian E-Commerce
+-- Dataset: Amazon Books Reviews
 -- Autor: Esteban Gutiérrez Saborío
+-- Modificado por: Ariana Víquez S.
 -- ============================================================
 --
 -- INSTRUCCIONES:
@@ -16,13 +17,13 @@
 -- Terminar conexiones activas a la base si existe
 SELECT pg_terminate_backend(pid)
 FROM pg_stat_activity
-WHERE datname = 'olist_db' AND pid <> pg_backend_pid();
+WHERE datname = 'amazon_books_db' AND pid <> pg_backend_pid();
 
 -- Eliminar la base si ya existe (para re-creación limpia)
-DROP DATABASE IF EXISTS olist_db;
+DROP DATABASE IF EXISTS amazon_books_db;
 
 -- Crear la base de datos con encoding UTF8 para soportar caracteres especiales
-CREATE DATABASE olist_db
+CREATE DATABASE amazon_books_db
     WITH
     OWNER = postgres
     ENCODING = 'UTF8'
@@ -32,9 +33,9 @@ CREATE DATABASE olist_db
     CONNECTION LIMIT = -1;
 
 -- Comentario descriptivo
-COMMENT ON DATABASE olist_db IS
+COMMENT ON DATABASE amazon_books_db IS
     'Base de datos del proyecto final — Dataset Olist Brazilian E-Commerce.
      Pipeline completo de datos con IA — Administración de Datos — LEAD University — Grupo 6.';
 
-\echo '✅ Base de datos olist_db creada exitosamente.'
-\echo '   Próximo paso: ejecutar sql/02_create_tables.sql'
+\echo '✅ Base de datos amazon_books_db creada exitosamente.'
+\echo '   Próximo paso: ejecutar sql/05_create_books_tables.sql'

@@ -8,86 +8,63 @@ exponer datos sensibles en el código fuente.
 Proyecto Final — Administración de Datos — LEAD University
 Grupo 6 | Parte 1: Fuente de Datos Real
 Autor: Esteban Gutiérrez Saborío
+Modificado por: Ariana Víquez S.
 """
 
 import os
 from dataclasses import dataclass
+from pathlib import Path
 from dotenv import load_dotenv
 
-# Cargar variables del archivo .env (ubicado en parte1_fuente_datos/)
-load_dotenv()
-
-
 @dataclass
-class DatabaseConfig:
-    """
-    Configuración inmutable de conexión a PostgreSQL.
-    Se construye desde variables de entorno.
-    """
+class DBConfig:
     host: str
     port: int
     database: str
     user: str
     password: str
 
-    @property
-    def connection_string(self) -> str:
-        """
-        Retorna el string de conexión SQLAlchemy (psycopg2 driver).
-        Formato: postgresql+psycopg2://user:password@host:port/database
-        """
-        return (
-            f"postgresql+psycopg2://{self.user}:{self.password}"
-            f"@{self.host}:{self.port}/{self.database}"
-        )
-
-    @property
-    def dsn(self) -> str:
-        """
-        Retorna el DSN de psycopg2 (conexión directa sin SQLAlchemy).
-        """
-        return (
-            f"host={self.host} "
-            f"port={self.port} "
-            f"dbname={self.database} "
-            f"user={self.user} "
-            f"password={self.password}"
-        )
-
-    def __repr__(self) -> str:
-        """Representación segura (oculta la contraseña)."""
-        return (
-            f"DatabaseConfig(host={self.host}, port={self.port}, "
-            f"database={self.database}, user={self.user}, password=***)"
-        )
-
-
-def get_db_config() -> DatabaseConfig:
+def get_db_config() -> DBConfig:
     """
-    Construye y retorna la configuración de base de datos
-    leyendo desde las variables de entorno.
-
-    Returns:
-        DatabaseConfig: Objeto con todas las credenciales de conexión.
-
-    Raises:
-        ValueError: Si alguna variable de entorno obligatoria no está definida.
+    Carga la configuración de la base de datos desde variables de entorno.
+    Busca el archivo .env en la carpeta de la Parte 1 de forma absoluta.
     """
-    # DB_PASSWORD es opcional (Postgres.app no usa contraseña por defecto)
-    required_vars = ["DB_HOST", "DB_PORT", "DB_NAME", "DB_USER"]
-    missing = [var for var in required_vars if not os.getenv(var)]
+    # Localizar la ruta de este archivo y subir un nivel para llegar a la raíz de parte1
+    base_path = Path(__file__).parent.parent
+    env_path = base_path / "config" / ".env"
+    
+    # Cargar el .env explícitamente desde esa ruta
+    if env_path.exists():
+        load_dotenv(dotenv_path=env_path)
+    else:
+        # Si no existe en la carpeta config, intentar en la raíz del proyecto
+        load_dotenv()
+
+    # Leer variables
+    host = os.getenv("DB_HOST")
+    port = os.getenv("DB_PORT")
+    database = os.getenv("DB_NAME")
+    user = os.getenv("DB_USER")
+    password = os.getenv("DB_PASSWORD")
+
+    # Validación
+    missing = []
+    if not host: missing.append("DB_HOST")
+    if not port: missing.append("DB_PORT")
+    if not database: missing.append("DB_NAME")
+    if not user: missing.append("DB_USER")
 
     if missing:
         raise ValueError(
             f"Faltan las siguientes variables de entorno: {missing}\n"
-            "Por favor, copia el archivo config/.env.example como .env "
-            "y completa tus credenciales."
+            f"Buscando en: {env_path.absolute()}\n"
+            "Por favor, asegúrate de que el archivo .env exista y tenga las credenciales."
         )
 
-    return DatabaseConfig(
-        host=os.getenv("DB_HOST", "localhost"),
-        port=int(os.getenv("DB_PORT", "5432")),
-        database=os.getenv("DB_NAME", "olist_db"),
-        user=os.getenv("DB_USER", "postgres"),
-        password=os.getenv("DB_PASSWORD", ""),
+    return DBConfig(
+        host=host,
+        port=int(port),
+        database=database,
+        user=user,
+        password=password if password else ""
     )

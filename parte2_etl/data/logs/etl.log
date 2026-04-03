@@ -1,0 +1,51 @@
+2026-04-02 18:19:09,349 - INFO - ============================================================
+2026-04-02 18:19:09,349 - INFO -   PIPELINE ETL — PARTE 2 — AMAZON BOOKS REVIEWS
+2026-04-02 18:19:09,350 - INFO -   Inicio: 2026-04-02 18:19:09
+2026-04-02 18:19:09,350 - INFO - ============================================================
+2026-04-02 18:19:09,351 - INFO - === INICIO EXTRACCIÓN ===
+2026-04-02 18:19:09,450 - INFO - Extrayendo tabla books.books_data...
+2026-04-02 18:19:09,645 - ERROR - Error en la extracción: 'utf-8' codec can't decode byte 0xf3 in position 85: invalid continuation byte
+2026-04-02 18:51:41,357 - INFO - ============================================================
+2026-04-02 18:51:41,359 - INFO -   PIPELINE ETL - PARTE 2 - AMAZON BOOKS REVIEWS
+2026-04-02 18:51:41,360 - INFO -   Inicio: 2026-04-02 18:51:41
+2026-04-02 18:51:41,360 - INFO - ============================================================
+2026-04-02 18:51:41,360 - INFO - === INICIO EXTRACCIÓN ===
+2026-04-02 18:51:41,457 - INFO - Extrayendo tabla books.books_data...
+2026-04-02 18:51:41,575 - ERROR - Error en la extracción: 'utf-8' codec can't decode byte 0xf3 in position 85: invalid continuation byte
+2026-04-02 18:51:41,575 - ERROR - El Pipeline fallo: 'utf-8' codec can't decode byte 0xf3 in position 85: invalid continuation byte
+2026-04-02 19:03:04,824 - INFO - ============================================================
+2026-04-02 19:03:04,825 - INFO -   PIPELINE ETL - PARTE 2 - AMAZON BOOKS REVIEWS
+2026-04-02 19:03:04,825 - INFO -   Inicio: 2026-04-02 19:03:04
+2026-04-02 19:03:04,825 - INFO - ============================================================
+2026-04-02 19:03:04,826 - INFO - === INICIO EXTRACCIÓN ===
+2026-04-02 19:03:04,877 - INFO - Extrayendo tabla books.books_data...
+2026-04-02 19:03:05,023 - ERROR - Error en la extracción: (psycopg2.errors.UndefinedTable) no existe la relación «books.books_data»
+LINE 1: SELECT * FROM books.books_data
+                      ^
+
+[SQL: SELECT * FROM books.books_data]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-04-02 19:03:05,023 - ERROR - El Pipeline fallo: (psycopg2.errors.UndefinedTable) no existe la relación «books.books_data»
+LINE 1: SELECT * FROM books.books_data
+                      ^
+
+[SQL: SELECT * FROM books.books_data]
+(Background on this error at: https://sqlalche.me/e/20/f405)
+2026-04-02 20:18:08,348 - INFO - ============================================================
+2026-04-02 20:18:08,349 - INFO -   PIPELINE ETL - PARTE 2 - AMAZON BOOKS REVIEWS
+2026-04-02 20:18:08,349 - INFO -   Inicio: 2026-04-02 20:18:08
+2026-04-02 20:18:08,349 - INFO - ============================================================
+2026-04-02 20:18:08,350 - INFO - === INICIO EXTRACCIÓN ===
+2026-04-02 20:18:08,450 - INFO - Extrayendo tabla books.books_data...
+2026-04-02 20:18:10,480 - INFO - Extrayendo tabla books.books_rating (limitado a 100k para eficiencia)...
+2026-04-02 20:18:11,621 - INFO - Extracción exitosa: 212404 libros y 100000 reseñas.
+2026-04-02 20:18:11,623 - INFO - === INICIO TRANSFORMACIÓN ===
+2026-04-02 20:18:11,735 - INFO - Realizando join entre libros y reseñas...
+2026-04-02 20:18:12,018 - INFO - Transformación completada. Registros finales: 100000
+2026-04-02 20:18:12,080 - INFO - === INICIO CARGA ===
+2026-04-02 20:18:30,986 - INFO - Datos guardados en CSV: C:\Users\vique\data-pipeline-ai-project\parte2_etl\data\curated\amazon_books_curated.csv
+2026-04-02 20:18:30,990 - INFO - Cargando datos en PostgreSQL (tabla books.curated_books_reviews)...
+2026-04-02 20:18:41,472 - INFO - Carga en base de datos completada con éxito.
+2026-04-02 20:18:41,473 - INFO - ============================================================
+2026-04-02 20:18:41,473 - INFO -   PROCESO ETL COMPLETADO EXITOSAMENTE
+2026-04-02 20:18:41,474 - INFO - ============================================================
