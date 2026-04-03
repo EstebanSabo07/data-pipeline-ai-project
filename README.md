@@ -42,7 +42,7 @@ Se configuró un esquema llamado `books` con dos tablas principales:
 
 Este módulo implementa el proceso de Extracción, Transformación y Carga (ETL) para preparar los datos de Amazon Books para un modelo de IA.
 
-## ⚙️ Lógica del Pipeline
+## Lógica del Pipeline
 1. **Extracción:** Consulta las tablas `books_data` y `books_rating` desde PostgreSQL.
 2. **Transformación:**
    - Limpieza de valores nulos en títulos y autores.
@@ -51,7 +51,7 @@ Este módulo implementa el proceso de Extracción, Transformación y Carga (ETL)
    - **Filtrado:** Selección de columnas relevantes para entrenamiento de IA.
 3. **Carga:** Persistencia de los datos "curados" en una nueva tabla `books.curated_books_reviews` y un archivo CSV para análisis rápido.
 
-## 🚀 Ejecución
+## Ejecución
 Para iniciar el proceso de transformación:
 ```bash
 python scripts/run_etl.py
