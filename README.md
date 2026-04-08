@@ -83,4 +83,5 @@ Ver instrucciones en `parte4_app_ia/README.md`
 - **Base de Datos:** PostgreSQL 18 (Postgres.app)
 - **Lenguaje:** Python 3.13 (Miniconda)
 - **Librerías:** psycopg2-binary 2.9.10, SQLAlchemy 2.0.30, pandas 2.2.2, scikit-learn
-- **Dataset:** Olist Brazilian E-Commerce (Kaggle) — descarga manual
+- **Dataset:** Amazon Books Reviews
+Goodreads-books reviews and descriptions of each book (Kaggle) — descarga manual
