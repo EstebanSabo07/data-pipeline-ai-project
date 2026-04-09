@@ -10,7 +10,7 @@
 
 # --- Base de datos PostgreSQL ---
 psycopg2-binary==2.9.10         # Driver nativo PostgreSQL para Python (>=2.9.10 para Python 3.13)
-SQLAlchemy==2.0.30              # ORM / engine para integración con pandas
+SQLAlchemy==2.0.36              # ORM / engine para integración con pandas
 
 # --- Procesamiento de datos ---
 pandas==2.2.2                   # Lectura de CSV y manipulación de DataFrames
