@@ -19,8 +19,5 @@ numpy==1.26.4                   # Operaciones numéricas
 # --- Variables de entorno ---
 python-dotenv==1.0.1            # Leer credenciales desde archivo .env
 
-# --- Kaggle API (descarga automática del dataset) ---
-kaggle==1.6.14                  # Cliente oficial de Kaggle
-
 # --- Utilidades ---
 tqdm==4.66.4                    # Barras de progreso (opcional, para carga masiva)
